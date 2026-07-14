@@ -1,98 +1,378 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from "react";
+import { router } from "expo-router";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Dimensions,
+  Animated,
+  Easing,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const { width, height } = Dimensions.get("window");
 
-export default function HomeScreen() {
+export default function HomePage() {
+
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const floatAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+
+    Animated.spring(scaleAnim,{
+      toValue:1,
+      useNativeDriver:true
+    }).start();
+
+    Animated.loop(
+      Animated.timing(rotateAnim,{
+        toValue:1,
+        duration:20000,
+        easing:Easing.linear,
+        useNativeDriver:true
+      })
+    ).start();
+
+    // Animated.loop(
+    //   Animated.sequence([
+    //     Animated.timing(floatAnim,{
+    //       toValue:-10,
+    //       duration:3000,
+    //       useNativeDriver:true
+    //     }),
+    //     Animated.timing(floatAnim,{
+    //       toValue:0,
+    //       duration:3000,
+    //       useNativeDriver:true
+    //     })
+    //   ])
+    // ).start();
+
+    Animated.loop(
+  Animated.sequence([
+    Animated.timing(floatAnim,{
+      toValue:-12,
+      duration:1800,
+      easing:Easing.inOut(Easing.ease),
+      useNativeDriver:true,
+    }),
+    Animated.timing(floatAnim,{
+      toValue:0,
+      duration:1800,
+      easing:Easing.inOut(Easing.ease),
+      useNativeDriver:true,
+    }),
+  ])
+).start();
+
+  },[]);
+
+  const rotate = rotateAnim.interpolate({
+    inputRange:[0,1],
+    outputRange:["0deg","360deg"]
+  });
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  <SafeAreaView style={styles.container}>
+
+  <LinearGradient
+    colors={["#090909","#101010","#05291d"]}
+    style={StyleSheet.absoluteFillObject}
+  />
+
+  <View style={styles.glowTop}/>
+  <View style={styles.glowBottom}/>
+
+  {/* <ScrollView
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={styles.scrollContent}
+  > */}
+
+    <View style={styles.hero}>
+
+        
+
+        <Animated.View
+          style={[
+            styles.logoWrapper,
+            {
+              transform:[
+                {scale:scaleAnim},
+                
+              ]
+            }
+          ]}
+        >
+
+          <Animated.View
+            style={[
+              styles.rotateRing,
+              {
+                transform:[{rotate}]
+              }
+            ]}
+          />
+
+          <TouchableOpacity activeOpacity={0.9}>
+
+            <LinearGradient
+              colors={["#1d1d1d","#133b2d"]}
+              style={styles.logoCircle}
+            >
+{/* 
+              <Image
+                source={require("../../assets/images/guru-consistency.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              /> */}
+
+              <Animated.Image
+  source={require("../../assets/images/guru-consistency.png")}
+  style={[
+    styles.logo,
+    {
+      transform: [
+        {
+          translateY: floatAnim,
+        },
+      ],
+    },
+  ]}
+  resizeMode="contain"
+/>
+
+              
+
+            </LinearGradient>
+
+          </TouchableOpacity>
+
+        </Animated.View>
+        <Animated.View
+  style={[
+    styles.content,
+    {
+      opacity: scaleAnim,
+    },
+  ]}
+>
+  {/* Badge */}
+
+
+  {/* Heading */}
+  <Text style={styles.title}>
+    <Text style={styles.greenText}>Stay Consistent</Text>
+    {"\n"}
+    <Text style={styles.whiteText}>Become</Text>
+    {"\n"}
+    <Text style={styles.greenText}>Unstoppable</Text>
+  </Text>
+
+
+  {/* Create Habit */}
+  <TouchableOpacity
+  style={styles.primaryButton}
+  onPress={() => router.push("/createhabit")}
+>
+    <LinearGradient
+      colors={["#34d399", "#10b981"]}
+      style={styles.primaryGradient}
+    >
+    <View style={styles.buttonRow}>
+<Text style={styles.primaryButtonText}>
+Create Habit
+</Text>
+
+<Ionicons
+name="chevron-forward"
+size={22}
+color="#000"
+/>
+
+</View>
+    </LinearGradient>
+  </TouchableOpacity>
+
+  {/* View Tracker */}
+  <TouchableOpacity
+  style={styles.secondaryButton}
+  onPress={() => router.push("/tracker")}
+>
+   <View style={styles.buttonRow}>
+
+<Ionicons
+name="time-outline"
+size={20}
+color="#fff"
+/>
+
+<Text style={styles.secondaryButtonText}>
+View Tracker
+</Text>
+
+</View>
+  </TouchableOpacity>
+
+</Animated.View>
+
+</View>
+
+{/* </ScrollView> */}
+
+</SafeAreaView>
+
+
+
+
   );
+
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+
+container:{
+flex:1,
+backgroundColor:"#090909"
+},
+
+hero:{
+flex:1,
+justifyContent:"center",
+alignItems:"center"
+
+},
+
+logoWrapper:{
+width:280,
+height:280,
+justifyContent:"center",
+alignItems:"center"
+},
+
+rotateRing:{
+position:"absolute",
+width:300,
+height:300,
+borderRadius:200,
+borderWidth:2,
+borderColor:"rgba(52,211,153,0.2)",
+borderTopColor:"#34d399"
+},
+
+logoCircle:{
+width:280,
+height:280,
+borderRadius:150,
+justifyContent:"center",
+alignItems:"center",
+borderWidth:2,
+borderColor:"rgba(52,211,153,0.2)"
+},
+
+logo:{
+width:"90%",
+height:"90%"
+},
+
+glowTop:{
+position:"absolute",
+top:-120,
+right:-120,
+width:300,
+height:300,
+borderRadius:150,
+backgroundColor:"#34d399",
+opacity:.08
+},
+
+glowBottom:{
+position:"absolute",
+bottom:-120,
+left:-120,
+width:300,
+height:300,
+borderRadius:150,
+backgroundColor:"#34d399",
+opacity:.05
+},
+
+content: {
+  marginTop: 20,
+  alignItems: "center",
+  paddingHorizontal: 25,
+},
+
+
+title: {
+  fontSize: 30,
+  fontWeight: "bold",
+  textAlign: "center",
+  marginBottom:10
+},
+
+greenText: {
+  color: "#34d399",
+},
+
+whiteText: {
+  color: "#ffffff",
+},
+
+primaryButton: {
+  width: 320,
+  borderRadius: 18,
+  overflow: "hidden",
+},
+
+primaryGradient: {
+  paddingVertical: 16,
+  alignItems: "center",
+},
+
+primaryButtonText: {
+  color: "black",
+  fontSize: 18,
+  fontWeight: "700",
+},
+
+secondaryButton: {
+  width: 320,
+  marginTop: 15,
+  borderWidth: 1,
+  borderColor: "rgba(255,255,255,0.15)",
+  borderRadius: 18,
+  paddingVertical: 16,
+  alignItems: "center",
+  backgroundColor: "rgba(255,255,255,0.03)",
+},
+
+secondaryButtonText: {
+  color: "#fff",
+  fontSize: 17,
+  fontWeight: "600",
+},
+
+scrollContent: {
+  flexGrow: 1,
+  justifyContent: "center",
+  paddingVertical: 40,
+},
+buttonRow:{
+flexDirection:"row",
+justifyContent:"center",
+alignItems:"center",
+gap:10
+},
+
+
+
+
 });
+

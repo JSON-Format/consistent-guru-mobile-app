@@ -1,24 +1,69 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { useEffect } from "react";
+import { Stack, router } from "expo-router";
+import * as Linking from "expo-linking";
+import { supabase } from "@/lib/client";
+import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    const handleUrl = async (url: string) => {
+      // console.log("ROOT URL:", url);
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      const parsed = Linking.parse(url.replace("#", "?"));
+
+      const accessToken = parsed.queryParams?.access_token as string | undefined;
+      const refreshToken = parsed.queryParams?.refresh_token as string | undefined;
+      const type = parsed.queryParams?.type as string | undefined;
+      console.log("type=", type)
+
+if (type === "recovery") {
+  if (accessToken && refreshToken) {
+    const { error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+
+    console.log("SET SESSION:", error);
+  }
+
+  router.replace("/reset-password");
+} else if (type === "signup") {
+
+  // Email verification
+  router.replace("/login");
+
+} else {
+
+  // Google OAuth / future OAuth
+  if (accessToken && refreshToken) {
+    const { error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+
+    console.log("SET SESSION:", error);
+  }
+
+  router.replace("/(tabs)");
+}
+    };
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleUrl(url);
+    });
+
+    const sub = Linking.addEventListener("url", ({ url }) => {
+      handleUrl(url);
+    });
+
+    return () => sub.remove();
+  }, []);
+
+    return (
+    <>
+      <Stack screenOptions={{ headerShown: false }} />
+      <Toast />
+    </>
   );
+
 }
