@@ -3,6 +3,7 @@ import { Habit } from "@/types/habit";
 import {
   View,
   Text,
+   Image,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
@@ -25,6 +26,32 @@ import {
   format,
 } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+
+const Meditating = require("../../../assets/images/guru-meditating.png");
+const Running = require("../../../assets/images/guru-running-new.png");
+const WakingUp = require("../../../assets/images/guru-waking-up.png");
+const EatingonTime = require("../../../assets/images/guru-eating.png");
+const Studying = require("../../../assets/images/guru-studying-new.png");
+const Planning = require("../../../assets/images/guru-planning-new.png");
+const Cleaning = require("../../../assets/images/guru-cleaning-new.png");
+const DrinkingWater = require("../../../assets/images/guru-drinking-water.png");
+const Sleeping = require("../../../assets/images/guru-sleeping.png");
+const Journaling = require("../../../assets/images/guru-journaling.png");
+const ScreenLimit = require("../../../assets/images/guru-screen-limit.png");
+
+const IMAGE_MAP: Record<string, any> = {
+  meditating: Meditating,
+  running: Running,
+  waking_up: WakingUp,
+  eating_on_time: EatingonTime,
+  studying: Studying,
+  planning: Planning,
+  cleaning: Cleaning,
+  drinking_water: DrinkingWater,
+  sleeping: Sleeping,
+  journaling: Journaling,
+  screen_limit: ScreenLimit,
+};
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -207,7 +234,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
       style={styles.container}
     >
       {/* Header - Habit Name */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <View>
           <Text style={styles.habitName}>{activity.name}</Text>
           <View style={styles.timeContainer}>
@@ -222,7 +249,50 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
         >
           <Feather name="trash-2" size={20} color="#64748b" />
         </TouchableOpacity>
+      </View> */}
+
+      <View style={styles.header}>
+  <View style={{ flexDirection: "row", alignItems: "center"}}>
+
+  <View style={styles.habitImageWrapper}>
+  <View style={styles.habitImageGlow} />
+
+  <Image
+    source={
+      activity.image?.startsWith("http")
+        ? { uri: activity.image }
+        : IMAGE_MAP[activity.image] ?? Meditating
+    }
+    style={styles.habitImage}
+    resizeMode="contain"
+  />
+</View>
+
+    <View>
+      <Text style={styles.habitName}>{activity.name}</Text>
+
+      <View style={styles.timeContainer}>
+        <Feather name="clock" size={14} color="#10b981" />
+        <Text style={styles.timeText}>
+          {formatTime12(activity.scheduled_time)}
+        </Text>
       </View>
+    </View>
+
+  </View>
+
+  <TouchableOpacity
+   activeOpacity={0.7}
+    onPress={() => onDelete(activity.id)}
+    style={styles.deleteButton}
+  >
+    <Feather
+  name="trash-2"
+  size={18}
+  color="#ef4444"
+/>
+  </TouchableOpacity>
+</View>
 
       {/* Level Badges */}
       <View style={styles.levelContainer}>
@@ -534,10 +604,19 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#10b981",
   },
-  deleteButton: {
-    padding: 8,
-    borderRadius: 8,
-  },
+deleteButton: {
+  width: 38,
+  height: 38,
+  borderRadius: 12,
+
+  backgroundColor: "rgba(239, 68, 68, 0.12)",
+
+  borderWidth: 1,
+  borderColor: "rgba(239, 68, 68, 0.25)",
+
+  justifyContent: "center",
+  alignItems: "center",
+},
   levelContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -616,7 +695,7 @@ const styles = StyleSheet.create({
   markButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "black",
   },
   markButtonTextCompleted: {
     color: "#10b981",
@@ -843,6 +922,28 @@ tooltipText: {
   color: "#fff",
   fontSize: 11,
   fontWeight: "500",
+},
+
+habitImageWrapper: {
+  width: 60,
+  height: 60,
+  justifyContent: "center",
+  alignItems: "center",
+  marginRight: 12,
+},
+
+habitImageGlow: {
+  position: "absolute",
+  width: 54,
+  height: 54,
+  borderRadius: 16,
+  backgroundColor: "#10b981",
+  opacity: 0.22,
+},
+
+habitImage: {
+  width: 52,
+  height: 52,
 },
 });
 

@@ -14,6 +14,8 @@ interface HabitStore {
   deleteHabit: (id: string) => void;
 
   clearHabits: () => void;
+
+  
 }
 
 export const useHabitStore = create<HabitStore>((set) => ({

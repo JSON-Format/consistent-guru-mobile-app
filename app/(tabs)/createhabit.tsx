@@ -47,12 +47,25 @@ const Journaling = require('../../assets/images/guru-journaling.png');
 const ScreenLimit = require('../../assets/images/guru-screen-limit.png');
 
 
+const IMAGE_MAP: Record<string, any> = {
+  meditating: Meditating,
+  running: Running,
+  waking_up: WakingUp,
+  eating_on_time: EatingonTime,
+  studying: Studying,
+  planning: Planning,
+  cleaning: Cleaning,
+  drinking_water: DrinkingWater,
+  sleeping: Sleeping,
+  journaling: Journaling,
+  screen_limit: ScreenLimit,
+};
 
 interface HabitCard {
   id?: string;
   label: string;
   description: string;
-  image: any;
+  image: string;
   gradient: [string, string, string];
   color: string;
   isCustom?: boolean;
@@ -62,77 +75,77 @@ const defaultHabits: HabitCard[] = [
   {
     label: 'Meditating',
     description: 'Find inner peace through mindful breathing and presence',
-    image: Meditating,
+    image: "meditating",
     gradient: ['#8B5CF6', '#6D28D9', '#D946EF'],
     color: '#8B5CF6',
   },
   {
     label: 'Running',
     description: 'Build endurance and release endorphins with every stride',
-    image: Running,
+    image: "running",
     gradient: ['#06B6D4', '#3B82F6', '#6366F1'],
     color: '#06B6D4',
   },
   {
     label: 'Waking Up',
     description: 'Rise with the sun and embrace the morning energy',
-    image: WakingUp,
+    image: "waking_up",
     gradient: ['#F59E0B', '#F97316', '#EF4444'],
     color: '#F59E0B',
   },
   {
     label: 'Eating on Time',
     description: 'Nourish your body with mindful, timely meals',
-    image: EatingonTime,
+    image: "eating_on_time",
     gradient: ['#10B981', '#059669', '#047857'],
     color: '#10B981',
   },
   {
     label: 'Studying',
     description: 'Expanding knowledge',
-    image: Studying,
+    image: "studying",
     gradient: ['#6366F1', '#4F46E5', '#4338CA'],
     color: '#6366F1',
   },
   {
     label: 'Planning',
     description: 'Organizing the day',
-    image: Planning,
+    image: "planning",
     gradient: ['#F59E0B', '#D97706', '#B45309'],
     color: '#F59E0B',
   },
   {
     label: 'Cleaning',
     description: 'Tidying the space',
-    image: Cleaning,
+    image: "cleaning",
     gradient: ['#10B981', '#059669', '#047857'],
     color: '#10B981',
   },
   {
     label: 'Drinking Water',
     description: 'Stay hydrated',
-    image: DrinkingWater,
+    image: "drinking_water",
     gradient: ['#0EA5E9', '#3B82F6', '#2563EB'],
     color: '#0EA5E9',
   },
   {
     label: 'Sleeping',
     description: 'Rest and recover',
-    image: Sleeping,
+    image: "sleeping",
     gradient: ['#8B5CF6', '#6D28D9', '#EC4899'],
     color: '#8B5CF6',
   },
   {
     label: 'Journaling',
     description: 'Reflect and write',
-    image: Journaling,
+    image: "journaling",
     gradient: ['#F43F5E', '#E11D48', '#BE123C'],
     color: '#F43F5E',
   },
   {
     label: 'Screen Limit',
     description: 'Mindful tech usage',
-    image: ScreenLimit,
+    image: "screen_limit",
     gradient: ['#6B7280', '#4B5563', '#374151'],
     color: '#6B7280',
   },
@@ -151,9 +164,17 @@ const colorOptions: {
 ];
 
 const customHabitImages = [
-  Meditating, Running, WakingUp, EatingonTime,
-  Studying, Planning, Cleaning, DrinkingWater,
-  Sleeping, Journaling, ScreenLimit,
+  { key: "meditating", image: Meditating },
+  { key: "running", image: Running },
+  { key: "waking_up", image: WakingUp },
+  { key: "eating_on_time", image: EatingonTime },
+  { key: "studying", image: Studying },
+  { key: "planning", image: Planning },
+  { key: "cleaning", image: Cleaning },
+  { key: "drinking_water", image: DrinkingWater },
+  { key: "sleeping", image: Sleeping },
+  { key: "journaling", image: Journaling },
+  { key: "screen_limit", image: ScreenLimit },
 ];
 
 const HabitSelector: React.FC = () => {
@@ -168,7 +189,7 @@ const HabitSelector: React.FC = () => {
   const [newHabit, setNewHabit] = useState<Partial<HabitCard>>({
     label: '',
     description: '',
-    image: null,
+    image: "",
     gradient: ['#8B5CF6', '#6D28D9', '#D946EF'],
     color: '#8B5CF6',
   });
@@ -337,7 +358,7 @@ useEffect(() => {
 
   const isCustomHabitCard = currentIndex === habits.length;
   const active: HabitCard = isCustomHabitCard ? habits[0] : habits[currentIndex];
-  console.log("ACTIVE HABIT =>", active);
+  // console.log("ACTIVE HABIT =>", active);
   const onTimeChange = (event: any, selectedDate: Date | undefined, habitIndex: number) => {
     setShowTimePicker(null);
     if (selectedDate) {
@@ -378,6 +399,7 @@ useEffect(() => {
       return;
     }
 
+    console.log("Custom Habit Image:", customHabit.image);
     const { data, error } = await supabase
       .from('user_habits')
       .insert({
@@ -415,7 +437,7 @@ setHabitTimes((prev) => ({
     setNewHabit({
       label: '',
       description: '',
-      image: null,
+      image:"",
       gradient: ['#8B5CF6', '#6D28D9', '#D946EF'],
       color: '#8B5CF6',
     });
@@ -521,11 +543,13 @@ const { data: newHabit, error } = await supabase
   .insert({
     user_id: user.id,
     name: habit.label,
+    image: habit.image,
     scheduled_time: selectedTime,
   })
   .select(`
     id,
     name,
+    image,
     scheduled_time,
     created_at,
     habit_logs (
@@ -574,6 +598,22 @@ Toast.show({
   type: "success",
   text1: "Habit Created 🎉",
   text2: `${createdCount} habit(s) added successfully`,
+});
+
+// Reset page state
+setSelectedHabits([]);
+setHabitTimes({});
+setCurrentIndex(2); // Default card (Waking Up)
+
+// Optional: close modal if open
+setShowAddModal(false);
+
+setNewHabit({
+  label: "",
+  description: "",
+  image:"",
+  gradient: ["#8B5CF6", "#6D28D9", "#D946EF"],
+  color: "#8B5CF6",
 });
 
 router.replace({
@@ -648,9 +688,13 @@ opacity:0.25,
 />
 
 <Image
- source={active.image}
- style={styles.habitImage}
- resizeMode="contain"
+  source={
+    typeof active.image === "string"
+      ? IMAGE_MAP[active.image]
+      : active.image
+  }
+  style={styles.habitImage}
+  resizeMode="contain"
 />
 
 <Animated.View
@@ -839,7 +883,7 @@ rotate:rotateInterpolate
                   {isCustomHabitCard ? 'Custom Habit' : active.label}
                 </Text>
 
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => toggleHabit(currentIndex)}
                   style={[
                     styles.toggleButton,
@@ -849,7 +893,31 @@ rotate:rotateInterpolate
                   <Text style={styles.toggleButtonText}>
                     {selectedHabits.includes(currentIndex) ? '✓' : '+'}
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+
+                <TouchableOpacity
+  onPress={() => {
+    if (isCustomHabitCard) {
+      setShowAddModal(true);   // ✅ Modal open
+    } else {
+      toggleHabit(currentIndex); // ✅ Normal habit
+    }
+  }}
+  style={[
+    styles.toggleButton,
+    !isCustomHabitCard &&
+      selectedHabits.includes(currentIndex) &&
+      styles.toggleButtonActive,
+  ]}
+>
+  <Text style={styles.toggleButtonText}>
+    {isCustomHabitCard
+      ? "+"
+      : selectedHabits.includes(currentIndex)
+      ? "✓"
+      : "+"}
+  </Text>
+</TouchableOpacity>
 
                 {active.isCustom && (
                   <TouchableOpacity
@@ -1053,18 +1121,18 @@ backgroundColor:(newHabit.color || active.color) + "22",
   onPress={() =>
     setNewHabit({
       ...newHabit,
-      image: img,
+      image: img.key,
     })
   }
   style={[
     styles.imageOption,
-    newHabit.image === img && {
-      backgroundColor: newHabit.color,
-    },
-    newHabit.image === img && styles.imageOptionSelected,
+  newHabit.image === img.key && {
+  backgroundColor: newHabit.color,
+},
+newHabit.image === img.key && styles.imageOptionSelected,
   ]}
 >
-                        <Image source={img} style={styles.imageOptionImage} />
+                        <Image source={img.image}  style={styles.imageOptionImage} />
                       </TouchableOpacity>
                     ))}
                   </View>

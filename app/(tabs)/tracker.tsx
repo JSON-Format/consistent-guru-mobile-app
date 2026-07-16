@@ -5,6 +5,35 @@ import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Habit } from "@/types/habit";
 import { useHabitStore } from "@/store/habitStore";
+const Meditating = require("../../assets/images/guru-meditating.png");
+const Running = require("../../assets/images/guru-running-new.png");
+const WakingUp = require("../../assets/images/guru-waking-up.png");
+const EatingonTime = require("../../assets/images/guru-eating.png");
+const Studying = require("../../assets/images/guru-studying-new.png");
+const Planning = require("../../assets/images/guru-planning-new.png");
+const Cleaning = require("../../assets/images/guru-cleaning-new.png");
+const DrinkingWater = require("../../assets/images/guru-drinking-water.png");
+const Sleeping = require("../../assets/images/guru-sleeping.png");
+const Journaling = require("../../assets/images/guru-journaling.png");
+const ScreenLimit = require("../../assets/images/guru-screen-limit.png");
+
+
+const IMAGE_MAP: Record<string, any> = {
+  meditating: Meditating,
+  running: Running,
+  waking_up: WakingUp,
+  eating_on_time: EatingonTime,
+  studying: Studying,
+  planning: Planning,
+  cleaning: Cleaning,
+  drinking_water: DrinkingWater,
+  sleeping: Sleeping,
+  journaling: Journaling,
+  screen_limit: ScreenLimit,
+};
+
+
+
 import {
   Alert,
   FlatList,
@@ -14,6 +43,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  Image,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -54,6 +84,7 @@ const TrackerPage: React.FC = () => {
         .select(`
           id,
           name,
+           image,
           scheduled_time,
           created_at,
           habit_logs (
@@ -258,7 +289,14 @@ const onRefresh = async () => {
               colors={["rgba(16, 185, 129, 0.1)", "rgba(16, 185, 129, 0.05)"]}
               style={styles.pendingIconContainer}
             >
-              <Feather name="target" size={24} color="#10b981" />
+  <Image
+  source={IMAGE_MAP[item.image] ?? Meditating}
+  style={{
+    width: 36,
+    height: 36,
+    resizeMode: "contain",
+  }}
+/>
             </LinearGradient>
 
             <View style={styles.pendingHabitText}>

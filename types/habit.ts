@@ -8,6 +8,7 @@ export interface HabitLog {
 export interface Habit {
   id: string;
   name: string;
+  image: string;
   scheduled_time?: string;
   created_at?: string;
   habit_logs: HabitLog[];

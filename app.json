@@ -12,11 +12,11 @@
       "supportsTablet": true
     },
     "android": {
-   "adaptiveIcon": {
-  "backgroundColor": "#000000",
-  "foregroundImage": "./assets/images/gurus.png",
-  "monochromeImage": "./assets/images/android-icon-monochrome.png"
-},
+      "adaptiveIcon": {
+        "backgroundColor": "#000000",
+        "foregroundImage": "./assets/images/gurus.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.consistentguru.app"
@@ -48,7 +48,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "d360f8c7-6901-4e6e-96d6-b27a6b0d1dc7"
+        "projectId": "1a873a06-c0b5-4f2e-9599-616bbd341034"
       }
     }
   }
