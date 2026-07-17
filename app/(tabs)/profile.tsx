@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useHabitStore } from "@/store/habitStore";
 import { View, Text, StyleSheet, Image,Alert, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { THEME } from "@/constants/theme";
@@ -12,6 +14,8 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
 const [session, setSession] = useState<any>(null);
 const [user, setUser] = useState<any>(null);
+
+const { setHabits } = useHabitStore();
 
 
   useEffect(() => {
@@ -30,7 +34,26 @@ const [user, setUser] = useState<any>(null);
       {
         text: "Logout",
         style: "destructive",
-       onPress: async () => {
+//        onPress: async () => {
+//   await supabase.auth.signOut();
+
+//   Toast.show({
+//     type: "success",
+//     text1: "Logged Out 👋",
+//     text2: "See you again soon!",
+//   });
+
+//   router.replace("/login");
+// }
+
+onPress: async () => {
+  // Clear Zustand store
+  setHabits([]);
+
+  // Clear cached habits
+  await AsyncStorage.removeItem("habits");
+
+  // Logout from Supabase
   await supabase.auth.signOut();
 
   Toast.show({
@@ -41,6 +64,7 @@ const [user, setUser] = useState<any>(null);
 
   router.replace("/login");
 }
+
       },
     ]
   );
@@ -65,7 +89,7 @@ const checkUser = async () => {
 };
 
 if (loading) {
-<SkeletonLoader/>
+  return <SkeletonLoader />;
 }
 
 if (!session) {

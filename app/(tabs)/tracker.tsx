@@ -278,6 +278,13 @@ const onRefresh = async () => {
       }
     );
 
+
+    console.log(
+  "Tracker Render =>",
+  "Habits:", habits.length,
+  "Pending:", pendingHabits.length
+);
+
     return (
       <Animated.View
         entering={FadeInDown.duration(300)}
@@ -330,8 +337,23 @@ const onRefresh = async () => {
     );
   };
 
-  const renderActivity = ({ item }: { item: Habit }) => (
-    <View key={item.id} style={styles.activityCardWrapper}>
+  // const renderActivity = ({ item }: { item: Habit }) => (
+    
+  //   <View key={item.id} style={styles.activityCardWrapper}>
+  //     <ActivityCard
+  //       activity={item}
+  //       onMark={handleMark}
+  //       onDelete={handleDelete}
+  //     />
+  //   </View>
+  // );
+
+  const renderActivity = ({ item }: { item: Habit }) => {
+
+  console.log("Rendering Activity:", item.name);
+
+  return (
+    <View style={styles.activityCardWrapper}>
       <ActivityCard
         activity={item}
         onMark={handleMark}
@@ -339,6 +361,7 @@ const onRefresh = async () => {
       />
     </View>
   );
+};
 
   return (
     <View style={styles.container}>
