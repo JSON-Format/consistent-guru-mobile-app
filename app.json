@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.consistentguru.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -48,8 +52,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "1a873a06-c0b5-4f2e-9599-616bbd341034"
+        "projectId": "1a2e7134-491a-4d3c-9db5-f06307cf75d3"
       }
-    }
+    },
+    "owner": "lore-more-pvt"
   }
 }
