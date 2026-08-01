@@ -1195,7 +1195,6 @@ newHabit.image === img.key && styles.imageOptionSelected,
                     ))}
                   </View>
 
-                  <Text style={styles.modalLabel}>Choose Color</Text>
                   <View style={styles.colorGrid}>
                     {colorOptions.map((color) => (
                       <TouchableOpacity
