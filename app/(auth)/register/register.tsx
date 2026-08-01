@@ -114,30 +114,75 @@ emailRedirectTo: "consistent-guru://callback",
 
 
  
-
-const handleGoogleLogin = async () => {
-  const redirectTo = Linking.createURL("callback");
-
-  const { data, error } =
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo,
-      },
-    });
-
-  if (error) {
-    Alert.alert(error.message);
-    return;
-  }
-
-  if (data?.url) {
-    await WebBrowser.openAuthSessionAsync(
-      data.url,
-      redirectTo
-    );
-  }
-};
+  const handleGoogleLogin = async () => {
+   if (googleLoading) return;
+ 
+   try {
+     setGoogleLoading(true);
+ 
+     const redirectTo = Linking.createURL("callback");
+ 
+ 
+     const { data, error } =
+       await supabase.auth.signInWithOAuth({
+         provider: "google",
+         options: {
+           redirectTo,
+           skipBrowserRedirect: true,
+         },
+       });
+ 
+     if (error) {
+       Toast.show({
+         type: "error",
+         text1: "Google Sign In Failed",
+         text2: error.message,
+       });
+       return;
+     }
+ 
+ if (data?.url) {
+   const result = await WebBrowser.openAuthSessionAsync(
+     data.url,
+     redirectTo
+   );
+ 
+ 
+   if (result.type === "success" && result.url) {
+     const parsed = Linking.parse(result.url!.replace("#", "?"));
+ 
+ 
+     const accessToken =
+       parsed.queryParams?.access_token as string | undefined;
+ 
+     const refreshToken =
+       parsed.queryParams?.refresh_token as string | undefined;
+ 
+ 
+ if (accessToken && refreshToken) {
+ 
+ 
+   const { data, error } = await supabase.auth.setSession({
+     access_token: accessToken,
+     refresh_token: refreshToken,
+   });
+ 
+ 
+ 
+   const {
+     data: { session },
+   } = await supabase.auth.getSession();
+ 
+   router.replace("/(tabs)");
+ }
+   }
+ }
+   } catch (error) {
+     console.log(error);
+   } finally {
+     setGoogleLoading(false);
+   }
+ };
 
   return (
 

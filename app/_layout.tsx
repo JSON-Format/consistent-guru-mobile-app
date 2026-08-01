@@ -7,14 +7,13 @@ import Toast from "react-native-toast-message";
 export default function RootLayout() {
   useEffect(() => {
     const handleUrl = async (url: string) => {
-      // console.log("ROOT URL:", url);
-
+  
       const parsed = Linking.parse(url.replace("#", "?"));
-
+    
       const accessToken = parsed.queryParams?.access_token as string | undefined;
       const refreshToken = parsed.queryParams?.refresh_token as string | undefined;
       const type = parsed.queryParams?.type as string | undefined;
-      console.log("type=", type)
+    
 
 if (type === "recovery") {
   if (accessToken && refreshToken) {
@@ -43,6 +42,11 @@ if (type === "recovery") {
 
     console.log("SET SESSION:", error);
   }
+  const {
+  data: { session },
+} = await supabase.auth.getSession();
+
+console.log("SESSION:", session);
 
   router.replace("/(tabs)");
 }

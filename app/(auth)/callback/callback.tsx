@@ -4,10 +4,14 @@ import { ActivityIndicator, View, Text } from "react-native";
 import { router } from "expo-router";
 import { supabase } from "@/lib/client";
 import { THEME } from "@/constants/theme";
+import * as Linking from "expo-linking";
 
 export default function CallbackScreen() {
   useEffect(() => {
     const check = async () => {
+      const url = await Linking.getInitialURL();
+
+const parsed = Linking.parse(url?.replace("#", "?") || "");
       const {
         data: { session },
       } = await supabase.auth.getSession();

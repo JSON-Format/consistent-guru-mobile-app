@@ -186,6 +186,7 @@ const HabitSelector: React.FC = () => {
   const [habitTimes, setHabitTimes] = useState<Record<number, Date>>({});
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [showTimePicker, setShowTimePicker] = useState<number | null>(null);
+  const [tempTime, setTempTime] = useState(new Date());
   const [newHabit, setNewHabit] = useState<Partial<HabitCard>>({
     label: '',
     description: '',
@@ -947,7 +948,11 @@ rotate:rotateInterpolate
                   </View>
 
                   <TouchableOpacity
-                    onPress={() => setShowTimePicker(currentIndex)}
+                    // onPress={() => setShowTimePicker(currentIndex)}
+                    onPress={() => {
+  setTempTime(habitTimes[currentIndex] || new Date());
+  setShowTimePicker(currentIndex);
+}}
                     style={styles.timePickerButton}
                   >
                     <Ionicons name="time-outline" size={14} color="#fff" />
@@ -1060,15 +1065,68 @@ backgroundColor:(newHabit.color || active.color) + "22",
         </ScrollView>
 
         {/* Time Picker */}
-        {showTimePicker !== null && (
+        {/* {showTimePicker !== null && (
           <DateTimePicker
             value={habitTimes[showTimePicker] || new Date()}
             mode="time"
             is24Hour={false}
             onChange={(event, date) => onTimeChange(event, date, showTimePicker)}
           />
-        )}
+        )} */}
 
+<Modal
+  visible={showTimePicker !== null}
+  transparent
+  animationType="fade"
+>
+  <View style={styles.timeOverlay}>
+    <View style={styles.timeModal}>
+
+      <Text style={styles.timeTitle}>
+        Select Time
+      </Text>
+
+      <DateTimePicker
+        value={tempTime}
+        mode="time"
+        display="spinner"
+         themeVariant="dark"
+        is24Hour={false}
+        onChange={(event, date) => {
+          if (date) setTempTime(date);
+        }}
+      />
+
+      <View style={styles.timeFooter}>
+
+        <TouchableOpacity
+          onPress={() => setShowTimePicker(null)}
+        >
+          <Text style={styles.cancelText}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => {
+            setHabitTimes(prev => ({
+              ...prev,
+              [showTimePicker!]: tempTime,
+            }));
+
+            setShowTimePicker(null);
+          }}
+        >
+          <Text style={styles.doneText}>
+            Done
+          </Text>
+        </TouchableOpacity>
+
+      </View>
+
+    </View>
+  </View>
+</Modal>
         {/* Add Custom Habit Modal */}
         <Modal
           visible={showAddModal}
@@ -1640,6 +1698,44 @@ headerTitle: {
     fontSize: 16,
     fontWeight: '700',
   },
+  timeOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.6)",
+  justifyContent: "center",
+  alignItems: "center",
+},
+
+timeModal: {
+  width: 320,
+  backgroundColor: "#1c1c1e",
+  borderRadius: 20,
+  padding: 20,
+},
+
+timeTitle: {
+  color: "#fff",
+  fontSize: 20,
+  fontWeight: "700",
+  textAlign: "center",
+  marginBottom: 10,
+},
+
+timeFooter: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginTop: 10,
+},
+
+cancelText: {
+  color: "#999",
+  fontSize: 16,
+},
+
+doneText: {
+  color: "#34d399",
+  fontSize: 16,
+  fontWeight: "700",
+},
 });
 
 export default HabitSelector;
