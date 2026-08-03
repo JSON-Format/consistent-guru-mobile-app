@@ -24,7 +24,9 @@ import { router } from "expo-router";
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../lib/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, {
+  DateTimePickerAndroid,
+} from "@react-native-community/datetimepicker";
 import dayjs from 'dayjs';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -949,9 +951,27 @@ rotate:rotateInterpolate
 
                   <TouchableOpacity
                     // onPress={() => setShowTimePicker(currentIndex)}
-                    onPress={() => {
-  setTempTime(habitTimes[currentIndex] || new Date());
-  setShowTimePicker(currentIndex);
+ onPress={() => {
+  if (Platform.OS === "ios") {
+    setTempTime(habitTimes[currentIndex] || new Date());
+    setShowTimePicker(currentIndex);
+  } else {
+    DateTimePickerAndroid.open({
+      value: habitTimes[currentIndex] || new Date(),
+      mode: "time",
+      is24Hour: false,
+  onChange: (event, date) => {
+  if (event.type === "dismissed") return;
+
+  if (date) {
+    setHabitTimes(prev => ({
+      ...prev,
+      [currentIndex]: date,
+    }));
+  }
+},
+    });
+  }
 }}
                     style={styles.timePickerButton}
                   >
@@ -1074,11 +1094,12 @@ backgroundColor:(newHabit.color || active.color) + "22",
           />
         )} */}
 
-<Modal
-  visible={showTimePicker !== null}
-  transparent
-  animationType="fade"
->
+{Platform.OS === "ios" && (
+  <Modal
+    visible={showTimePicker !== null}
+    transparent
+    animationType="fade"
+  >
   <View style={styles.timeOverlay}>
     <View style={styles.timeModal}>
 
@@ -1127,6 +1148,7 @@ backgroundColor:(newHabit.color || active.color) + "22",
     </View>
   </View>
 </Modal>
+)}
         {/* Add Custom Habit Modal */}
         <Modal
           visible={showAddModal}

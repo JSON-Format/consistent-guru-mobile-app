@@ -134,7 +134,7 @@ export default function HomePage() {
               /> */}
 
               <Animated.Image
-  source={require("../../assets/images/guru-consistency.png")}
+  source={require("../../assets/images/consistent-guru.png")}
   style={[
     styles.logo,
     {
