@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHabitStore } from "@/store/habitStore";
+import { useForm, Controller } from "react-hook-form";
 import {
   View,
   Text,
@@ -178,6 +179,10 @@ const customHabitImages = [
   { key: "journaling", image: Journaling },
   { key: "screen_limit", image: ScreenLimit },
 ];
+interface HabitForm {
+  label: string;
+  description: string;
+}
 
 const HabitSelector: React.FC = () => {
   const creatingRef = useRef(false);
@@ -190,12 +195,23 @@ const HabitSelector: React.FC = () => {
   const [showTimePicker, setShowTimePicker] = useState<number | null>(null);
   const [tempTime, setTempTime] = useState(new Date());
   const [newHabit, setNewHabit] = useState<Partial<HabitCard>>({
-    label: '',
-    description: '',
     image: "",
     gradient: ['#8B5CF6', '#6D28D9', '#D946EF'],
     color: '#8B5CF6',
   });
+
+  const {
+  control,
+  handleSubmit,
+  reset,
+  formState: { errors },
+} = useForm<HabitForm>({
+  mode: "onSubmit",
+  defaultValues: {
+    label: "",
+    description: "",
+  },
+});
 
 const {
   habits: storeHabits,
@@ -372,14 +388,14 @@ useEffect(() => {
     }
   };
 
-  const addCustomHabit = async () => {
-    const label = newHabit.label?.trim();
-    const description = newHabit.description?.trim();
+  const addCustomHabit = async (data: HabitForm) => {
+   const label = data.label.trim();
+const description = data.description.trim();
 
-    if (!label || !description || !newHabit.image) {
-      Alert.alert('Error', 'Please fill all fields');
-      return;
-    }
+   if (!newHabit.image) {
+  Alert.alert("Error", "Please select image");
+  return;
+}
 
     const exists = habits.some((h) => h.label.toLowerCase() === label.toLowerCase());
     if (exists) {
@@ -388,8 +404,8 @@ useEffect(() => {
     }
 
     const customHabit: HabitCard = {
-      label: newHabit.label!,
-      description: newHabit.description!,
+      label,
+description,
       image: newHabit.image,
       gradient: newHabit.gradient || ['#8B5CF6', '#6D28D9', '#D946EF'],
       color: newHabit.color || '#8B5CF6',
@@ -403,18 +419,18 @@ useEffect(() => {
     }
 
     console.log("Custom Habit Image:", customHabit.image);
-    const { data, error } = await supabase
-      .from('user_habits')
-      .insert({
-        user_id: user.id,
-        label: customHabit.label.trim(),
-        description: customHabit.description.trim(),
-        image: customHabit.image,
-        gradient: customHabit.gradient.join(' '),
-        color: customHabit.color,
-      })
-      .select()
-      .single();
+ const { data: insertedHabit, error } = await supabase
+  .from("user_habits")
+  .insert({
+    user_id: user.id,
+    label,
+    description,
+    image: customHabit.image,
+    gradient: customHabit.gradient.join(" "),
+    color: customHabit.color,
+  })
+  .select()
+  .single();
 
     if (error) {
       console.error('Insert Error:', error);
@@ -422,7 +438,7 @@ useEffect(() => {
       return;
     }
 
-    setHabits([...habits, { ...customHabit, id: data.id }]);
+    setHabits([...habits, { ...customHabit, id: insertedHabit.id }]);
 
     const newHabitIndex = habits.length;
 
@@ -436,14 +452,15 @@ setHabitTimes((prev) => ({
 }));
 
     
-    setShowAddModal(false);
-    setNewHabit({
-      label: '',
-      description: '',
-      image:"",
-      gradient: ['#8B5CF6', '#6D28D9', '#D946EF'],
-      color: '#8B5CF6',
-    });
+reset();
+
+setNewHabit({
+  image: "",
+  gradient: ['#8B5CF6', '#6D28D9', '#D946EF'],
+  color: '#8B5CF6',
+});
+
+setShowAddModal(false);
   };
 
   const removeCustomHabit = async (habitIndex: number) => {
@@ -595,8 +612,6 @@ await AsyncStorage.setItem(
    
 
    if (createdCount > 0) {
- 
-
 Toast.show({
   type: "success",
   text1: "Habit Created 🎉",
@@ -609,11 +624,11 @@ setHabitTimes({});
 setCurrentIndex(2); // Default card (Waking Up)
 
 // Optional: close modal if open
+
+reset();
 setShowAddModal(false);
 
 setNewHabit({
-  label: "",
-  description: "",
   image:"",
   gradient: ["#8B5CF6", "#6D28D9", "#D946EF"],
   color: "#8B5CF6",
@@ -636,11 +651,18 @@ router.replace({
   const renderHabitCard = () => {
     if (isCustomHabitCard) {
       return (
-        <TouchableOpacity
-          style={styles.customCard}
-          onPress={() => setShowAddModal(true)}
-          activeOpacity={0.8}
-        >
+      <TouchableOpacity
+  style={styles.customCard}
+  onPress={() => {
+    setNewHabit({
+      image: "meditating",
+      gradient: ['#8B5CF6', '#6D28D9', '#D946EF'],
+      color: '#8B5CF6',
+    });
+
+    setShowAddModal(true);
+  }}
+>
           <LinearGradient
             colors={['rgba(139, 92, 246, 0.3)', 'rgba(217, 70, 239, 0.3)']}
             style={styles.customCardGradient}
@@ -1019,8 +1041,15 @@ rotate:rotateInterpolate
               />
 
               <TouchableOpacity
-                onPress={() => setShowAddModal(true)}
-                // style={styles.addDotButton}
+                  onPress={() => {
+    setNewHabit({
+      image: "meditating",
+      gradient: ['#8B5CF6', '#6D28D9', '#D946EF'],
+      color: '#8B5CF6',
+    });
+
+    setShowAddModal(true);
+  }}
                 style={[
 styles.addDotButton,
 {
@@ -1174,21 +1203,55 @@ backgroundColor:(newHabit.color || active.color) + "22",
                 </View>
 
                 <View style={styles.modalBody}>
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Habit Name"
-                    placeholderTextColor="#666"
-                    value={newHabit.label}
-                    onChangeText={(text) => setNewHabit({ ...newHabit, label: text })}
-                  />
+                 <Controller
+  control={control}
+  name="label"
+ rules={{
+  required: "Habit Name is required",
+  validate: (value) =>
+    value.trim().length > 0 || "Habit Name is required",
+}}
+  render={({ field: { onChange, value } }) => (
+    <TextInput
+      style={styles.modalInput}
+      placeholder="Habit Name"
+      placeholderTextColor="#666"
+      value={value}
+      onChangeText={onChange}
+    />
+  )}
+/>
 
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Description"
-                    placeholderTextColor="#666"
-                    value={newHabit.description}
-                    onChangeText={(text) => setNewHabit({ ...newHabit, description: text })}
-                  />
+{errors.label && (
+  <Text style={{ color: "red", marginTop: 4 }}>
+    {errors.label.message}
+  </Text>
+)}
+
+                 <Controller
+  control={control}
+  name="description"
+ rules={{
+  required: "Description is required",
+  validate: (value) =>
+    value.trim().length > 0 || "Description is required",
+}}
+  render={({ field: { onChange, value } }) => (
+    <TextInput
+      style={styles.modalInput}
+      placeholder="Description"
+      placeholderTextColor="#666"
+      value={value}
+      onChangeText={onChange}
+    />
+  )}
+/>
+
+{errors.description && (
+  <Text style={{ color: "red", marginTop: 4 }}>
+    {errors.description.message}
+  </Text>
+)}
 
                   
 
@@ -1238,12 +1301,10 @@ newHabit.image === img.key && styles.imageOptionSelected,
                   </View>
 
                   <TouchableOpacity
-                    onPress={addCustomHabit}
-                    disabled={!newHabit.label || !newHabit.description || !newHabit.image}
+                   onPress={handleSubmit(addCustomHabit)}
                     style={[
                       styles.addHabitButton,
-                      (!newHabit.label || !newHabit.description || !newHabit.image) &&
-                        styles.addHabitButtonDisabled,
+                      
                     ]}
                   >
                     <LinearGradient
