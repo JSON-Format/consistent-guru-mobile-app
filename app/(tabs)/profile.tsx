@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useHabitStore } from "@/store/habitStore";
-import { View, Text, StyleSheet, Image,Alert, Pressable, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image,Alert, Pressable, ScrollView, Linking, } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { THEME } from "@/constants/theme";
 import { useEffect, useState } from "react";
@@ -34,17 +34,7 @@ const { setHabits } = useHabitStore();
       {
         text: "Logout",
         style: "destructive",
-//        onPress: async () => {
-//   await supabase.auth.signOut();
 
-//   Toast.show({
-//     type: "success",
-//     text1: "Logged Out 👋",
-//     text2: "See you again soon!",
-//   });
-
-//   router.replace("/login");
-// }
 
 onPress: async () => {
   // Clear Zustand store
@@ -213,44 +203,121 @@ if (!session) {
       {user?.email}
     </Text>
 
-    <View
-      style={{
-        marginTop: 16,
-        backgroundColor: "#1F8A4D",
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 14,
-        paddingVertical: 6,
-        borderRadius: 20,
-      }}
-    >
+  </View>
+
+  <View
+  style={{
+    marginHorizontal: 20,
+    backgroundColor: THEME.COLORS.card,
+    borderRadius: 20,
+    overflow: "hidden",
+  }}
+>
+  {/* Privacy Policy */}
+  <Pressable
+  onPress={() =>
+  Linking.openURL("https://consistent.guru/privacy-policy")
+}
+    style={styles.menuItem}
+  >
+    <View style={styles.menuLeft}>
       <Ionicons
-        name="checkmark-circle"
-        size={18}
-        color="#fff"
+        name="shield-checkmark-outline"
+        size={22}
+        color={THEME.COLORS.text}
       />
-      <Text
-        style={{
-          color: "#fff",
-          marginLeft: 6,
-          fontWeight: "600",
-        }}
-      >
-        Verified Account
+
+      <Text style={styles.menuText}>
+        Privacy Policy
       </Text>
     </View>
 
-    <Text
-      style={{
-        marginTop: 20,
-        textAlign: "center",
-        color: THEME.COLORS.textSecondary,
-        lineHeight: 22,
-      }}
-    >
-      Keep building your daily habits and stay consistent every day.
-    </Text>
-  </View>
+    <Ionicons
+      name="chevron-forward"
+      size={20}
+      color={THEME.COLORS.textSecondary}
+    />
+  </Pressable>
+
+  {/* Terms & Conditions */}
+  <Pressable
+    onPress={() =>
+  Linking.openURL("https://consistent.guru/terms-and-conditions")
+}
+    style={styles.menuItem}
+  >
+    <View style={styles.menuLeft}>
+      <Ionicons
+        name="document-text-outline"
+        size={22}
+        color={THEME.COLORS.text}
+      />
+
+      <Text style={styles.menuText}>
+        Terms & Conditions
+      </Text>
+    </View>
+
+    <Ionicons
+      name="chevron-forward"
+      size={20}
+      color={THEME.COLORS.textSecondary}
+    />
+  </Pressable>
+
+  {/* Support Center */}
+  <Pressable
+    onPress={() =>
+  Linking.openURL("https://consistent.guru/support")
+}
+    style={styles.menuItem}
+  >
+    <View style={styles.menuLeft}>
+      <Ionicons
+        name="help-circle-outline"
+        size={22}
+        color={THEME.COLORS.text}
+      />
+
+      <Text style={styles.menuText}>
+        Support Center
+      </Text>
+    </View>
+
+    <Ionicons
+      name="chevron-forward"
+      size={20}
+      color={THEME.COLORS.textSecondary}
+    />
+  </Pressable>
+
+  {/* Account Center */}
+  <Pressable
+    onPress={() => router.push("../pages/account-center")}
+    style={[
+      styles.menuItem,
+      { borderBottomWidth: 0 },
+    ]}
+  >
+    <View style={styles.menuLeft}>
+      <Ionicons
+        name="person-circle-outline"
+        size={22}
+        color={THEME.COLORS.text}
+      />
+
+      <Text style={styles.menuText}>
+        Account Center
+      </Text>
+    </View>
+
+    <Ionicons
+      name="chevron-forward"
+      size={20}
+      color={THEME.COLORS.textSecondary}
+    />
+  </Pressable>
+</View>
 
   {/* Logout */}
   <Pressable
