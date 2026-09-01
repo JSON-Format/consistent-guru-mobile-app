@@ -49,13 +49,9 @@ const loadUser = async () => {
     null
   );
 
-  const name =
-    user.user_metadata?.full_name ||
-    user.user_metadata?.name ||
-    user.email ||
-    "";
+const email = user.email || "";
 
-  setInitial(name.charAt(0).toUpperCase());
+setInitial(email.charAt(0).toUpperCase());
 };
 
 

@@ -1,6 +1,7 @@
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
+import * as AppleAuthentication from "expo-apple-authentication";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -36,6 +37,7 @@ type RegisterFormData = {
 
 export default function RegisterScreen() {
   const [googleLoading, setGoogleLoading] = useState(false);
+   const [appleLoading, setAppleLoading] = useState(false);
 
   const [showPassword, setShowPassword] =
     useState(false);
@@ -183,6 +185,59 @@ emailRedirectTo: "consistent-guru://callback",
      setGoogleLoading(false);
    }
  };
+
+
+ const handleAppleLogin = async () => {
+   if (appleLoading) return;
+ 
+   try {
+     setAppleLoading(true);
+ 
+     const credential = await AppleAuthentication.signInAsync({
+       requestedScopes: [
+         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+         AppleAuthentication.AppleAuthenticationScope.EMAIL,
+       ],
+     });
+ 
+     if (!credential.identityToken) {
+       throw new Error("Apple identity token was not returned.");
+     }
+ 
+     const { error } = await supabase.auth.signInWithIdToken({
+       provider: "apple",
+       token: credential.identityToken,
+     });
+ 
+     if (error) {
+       throw error;
+     }
+ 
+     Toast.show({
+       type: "success",
+       text1: "Welcome 👋",
+       text2: "Apple Sign In successful",
+     });
+ 
+     router.replace("/(tabs)");
+   } catch (error: any) {
+     if (error?.code === "ERR_REQUEST_CANCELED") {
+       return;
+     }
+ 
+     console.log("Apple Sign In error:", error);
+ 
+     Toast.show({
+       type: "error",
+       text1: "Apple Sign In Failed",
+       text2:
+         error?.message || "Unable to sign in with Apple.",
+     });
+   } finally {
+     setAppleLoading(false);
+   }
+ };
+ 
 
   return (
 
@@ -809,6 +864,46 @@ emailRedirectTo: "consistent-guru://callback",
           />
 
         </View>
+
+
+         {Platform.OS === "ios" && (
+  <Pressable
+    onPress={handleAppleLogin}
+    disabled={appleLoading}
+    style={{
+      backgroundColor: "#000",
+      borderWidth: 1.5,
+      borderColor: THEME.COLORS.border,
+      height: 54,
+      borderRadius: THEME.RADIUS.lg,
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "row",
+      marginTop: 12,
+      marginBottom:12,
+      opacity: appleLoading ? 0.6 : 1,
+    }}
+  >
+    <Ionicons
+      name="logo-apple"
+      size={22}
+      color="#fff"
+    />
+
+    <Text
+      style={{
+        color: "#fff",
+        marginLeft: 10,
+        fontWeight: "700",
+        fontSize: THEME.FONT_SIZES.base,
+      }}
+    >
+      {appleLoading
+        ? "Signing In..."
+        : "Continue with Apple"}
+    </Text>
+  </Pressable>
+)}
 
         {/* GOOGLE BUTTON */}
         <Pressable

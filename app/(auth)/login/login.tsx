@@ -772,6 +772,7 @@ const handleAppleLogin = async () => {
       alignItems: "center",
       flexDirection: "row",
       marginTop: 12,
+      marginBottom:12,
       opacity: appleLoading ? 0.6 : 1,
     }}
   >
