@@ -162,23 +162,46 @@ if (!session) {
       elevation: 4,
     }}
   >
-    <Image
-      source={{
-        uri:
-          user?.user_metadata?.avatar_url ||
-          user?.user_metadata?.picture ||
-          `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            user?.email ?? "User"
-          )}&background=6C63FF&color=fff&size=256`,
-      }}
+ {user?.user_metadata?.avatar_url ||
+ user?.user_metadata?.picture ? (
+  <Image
+    source={{
+      uri:
+        user?.user_metadata?.avatar_url ||
+        user?.user_metadata?.picture,
+    }}
+    style={{
+      width: 110,
+      height: 110,
+      borderRadius: 55,
+      borderWidth: 3,
+      borderColor: THEME.COLORS.primary,
+    }}
+  />
+) : (
+  <View
+    style={{
+      width: 110,
+      height: 110,
+      borderRadius: 55,
+      backgroundColor: THEME.COLORS.primary,
+      borderWidth: 3,
+      borderColor: THEME.COLORS.primary,
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <Text
       style={{
-        width: 110,
-        height: 110,
-        borderRadius: 55,
-        borderWidth: 3,
-        borderColor: THEME.COLORS.primary,
+        color: "#fff",
+        fontSize: 42,
+        fontWeight: "700",
       }}
-    />
+    >
+      {user?.email?.charAt(0).toUpperCase() || "?"}
+    </Text>
+  </View>
+)}
 
     <Text
       style={{
